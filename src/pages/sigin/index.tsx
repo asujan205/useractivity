@@ -1,26 +1,30 @@
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { api } from "~/utils/api";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 import { cn } from "~/utils/cn";
 
-const SignupPage = () => {
+import { useRouter } from "next/router";
+import Link from "next/link";
+
+const SigninPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  //   const {mutate,isLoading:isCreating} = api.user.create()
-
-  const { mutate, isLoading: isCreating } = api.user.create.useMutation({
-    onSuccess: () => {
-      // router.push("/login");
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-  const handleSubmit = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    mutate({ email, password });
+    setIsLoading(true);
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    if (res?.error) {
+      alert(res.error);
+    } else {
+      router.push("/");
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -28,7 +32,7 @@ const SignupPage = () => {
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Create account
+            SignIn
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
@@ -75,7 +79,7 @@ const SignupPage = () => {
                   <button
                     type="submit"
                     onClick={handleSubmit}
-                    disabled={isCreating}
+                    disabled={isLoading}
                     className={cn(
                       "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm",
                       "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
@@ -83,9 +87,15 @@ const SignupPage = () => {
                       "disabled:cursor-not-allowed disabled:bg-indigo-300 disabled:opacity-50"
                     )}
                   >
-                    {!isCreating ? "Create" : "Creating..."}
+                    {!isLoading ? "Log in" : "Login in..."}
                   </button>
                 </div>
+                <p className="my-4 text-center text-slate-700">
+                  Dont have an account?{" "}
+                  <Link href="/signup" className="underline">
+                    Sign up here
+                  </Link>
+                </p>
               </div>
             </form>
           </div>
@@ -94,5 +104,3 @@ const SignupPage = () => {
     </div>
   );
 };
-
-export default SignupPage;
