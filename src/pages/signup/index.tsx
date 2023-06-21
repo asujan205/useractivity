@@ -12,7 +12,7 @@ const SignupPage = () => {
 
   const { mutate, isLoading: isCreating } = api.user.create.useMutation({
     onSuccess: () => {
-      // router.push("/login");
+      router.replace("/api/auth/signin");
     },
     onError: (error) => {
       console.log(error);
