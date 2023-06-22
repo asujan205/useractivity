@@ -22,7 +22,7 @@ const SigninPage = () => {
     if (res?.error) {
       alert(res.error);
     } else {
-      router.push("/");
+      router.push("/dashboard");
     }
     setIsLoading(false);
   };
