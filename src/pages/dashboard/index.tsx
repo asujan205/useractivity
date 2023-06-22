@@ -14,3 +14,5 @@ const UserInfoDashboard = () => {
     </div>
   );
 };
+
+export default UserInfoDashboard;
